@@ -1,0 +1,37 @@
+version: '3'
+services:
+ # Nginx server configuration   
+  web:
+    image: nginx:latest
+    container_name: webserver
+    depends_on:
+      - docker-mysql
+      - php
+    links:
+      - docker-mysql
+      - php
+    volumes:
+      - ./Docker_Project/nginx/site.conf:/etc/nginx/conf.d/default.conf
+      - ./webcontent:/var/www/html
+    ports:
+      - "8080:80"
+ # Php-fpm configuration
+  php:
+    image: clientshopping-php
+    volumes:
+      - ./Docker_Project/php:/usr/local/etc/php/php.ini
+      - ./webcontent:/var/www/html
+ # Mysql configuration
+  docker-mysql:
+    image: mysql
+    restart: always
+    environment:
+        - MYSQL_ALLOW_EMPTY_PASSWORD=1
+        - MYSQL_DATABASE=cv
+    ports:
+        - "3306:3306"
+    volumes:
+        - /dbdata:/var/lib/mysql
+
+volumes:
+    dbdata:
